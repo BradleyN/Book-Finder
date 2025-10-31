@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
 
 from UI.Widgets.table import Table
 from UI.Widgets.input import LineInput
+from Backend.BooksTable import Books
 
 #This class is responsible for creating the UI for the search tab of the application
 class SearchPage(QWidget):
@@ -13,10 +14,10 @@ class SearchPage(QWidget):
         super().__init__()
 
         #Temporary. Eventually this will be replaced once the backend is done and we can get the books to read directly from the database
-        self.books = {"Goat Brothers": ("11111111 Colton, Larry", "", "History" , "General Doubleday", 8.79, "January", 1993)}
-
+        self.books = Books
+        self.book_list = self.books.fetch_all()
         self.table = Table(["Title", "Author", "Description", "Category", "Publisher", "Price in USD", "Publish Month", "Publish Year"])
-        self.table.fill_table(self.books)
+        self.table.fill_table(self.book_list)
 
         #Create search bar        
         search_input = LineInput()
