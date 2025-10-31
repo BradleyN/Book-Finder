@@ -1,0 +1,4 @@
+QHeaderView::section {
+  padding: 10px;
+  min-height: 20px;
+}
