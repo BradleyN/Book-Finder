@@ -19,10 +19,11 @@ class Table(QTableWidget):
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
 
-        #Adjust the horizontal header to stretch the last column to the edge of the canvas, and to resize each column to fit the largest item in that column.
+        #Adjust the horizontal header to stretch the last column to the edge of the canvas
         horizontal_header = self.horizontalHeader()
         horizontal_header.setStretchLastSection(True)
-        horizontal_header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        horizontal_header.setDefaultSectionSize(125) #Sets default column width to 125
+        horizontal_header.resizeSection(2, 250) #Set width of Description column to double the default
 
         #Hide the vertical header, and set the vertical header to resize to the size of the item.
         vertical_header = self.verticalHeader()
