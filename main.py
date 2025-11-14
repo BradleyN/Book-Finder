@@ -59,6 +59,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     #Create the main window for the application
     window = MainWindow()
-    window.resize(800, 600)
+    window.resize(1000, 750)
     window.show()
     sys.exit(app.exec())
