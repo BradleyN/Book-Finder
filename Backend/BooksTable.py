@@ -1,10 +1,11 @@
 import sqlite3
+import asyncio
 
 class BooksTable:
     def __init__(self):
         # Initialize connection to the database file
         self.db_path = 'Backend/Books_Database/BooksDatabase.db'
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.db_path,check_same_thread=False)
         self.conn.row_factory = sqlite3.Row  # This allows column access by name
 
     def fetch_all(self):
@@ -28,9 +29,5 @@ class BooksTable:
                 print(f"Failed to read column name, {e}")
                 return None
             
-    
-    
-
-
 Books = BooksTable()
-#print(Books.fetch_all())
+        
