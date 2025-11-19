@@ -11,7 +11,7 @@ class BooksTable:
         conn.row_factory = sqlite3.Row  # This allows column access by name
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM books LIMIT 100")
+        cursor.execute("SELECT * FROM BOOKS LIMIT 100")
         rows = cursor.fetchall()
 
         # Convert rows to list of dictionaries
