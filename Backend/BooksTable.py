@@ -13,7 +13,7 @@ class BooksTable:
         with self.conn:
             cursor = self.conn.cursor()
 
-            cursor.execute("SELECT * FROM books LIMIT 100")
+            cursor.execute("SELECT * FROM BOOKS LIMIT 100")
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
 
@@ -22,7 +22,7 @@ class BooksTable:
         with self.conn:
             cursor = self.conn.cursor()
             try:
-                cursor.execute("SELECT Title, Authors FROM books LIMIT 100")
+                cursor.execute("SELECT Title, Authors FROM BOOKS LIMIT 100")
                 rows = cursor.fetchall()
                 return [dict(row) for row in rows]
             except Exception as e:
