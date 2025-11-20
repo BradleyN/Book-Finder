@@ -7,12 +7,14 @@ from PySide6.QtWidgets import (
 
 from UI.Widgets.tabs import Tab_Widget
 
+
+from time import sleep
 # This class is responsible for handling the window itself, including the title bar, keyboard shortcuts, and theme.
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         #Create a widget that contains the tabbing system.
-        self.tabs = Tab_Widget()
+        self.tabs = Tab_Widget(parent=self)
         #Get the stylesheets and put them into self.dark_stylesheet and self.light_stylesheet
         self.getStyleSheets()
 
@@ -55,10 +57,12 @@ class MainWindow(QMainWindow):
         self.light_stylesheet += fixes_stylesheet
         self.dark_stylesheet += fixes_stylesheet
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     #Create the main window for the application
     window = MainWindow()
-    window.resize(800, 600)
+    window.resize(1000, 750)
     window.show()
     sys.exit(app.exec())
+    
