@@ -4,7 +4,7 @@ class DictionaryTableModel(QAbstractTableModel):
     def __init__(self, data, parent=None):
         super().__init__(parent)
         self._data = data  # List of dictionaries
-        self._headers = list(self._get_all_keys())  # Extract column headers from all dictionaries
+        self._headers = ['Title', 'Authors']
 
     def rowCount(self, parent=None):
         return len(self._data)

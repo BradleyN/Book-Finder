@@ -1,5 +1,5 @@
-from PySide6.QtCore import QRunnable, Slot, QThreadPool
-from Backend.Signal import WorkerSignals
+from PySide6.QtCore import QRunnable, Slot
+from Backend.Signal import Events
 
 import traceback
 import sys
@@ -16,15 +16,17 @@ class Worker(QRunnable):
     :param kwargs: Keyword arguments for the function `fn`.
     """
 
+    """Code adapted from Martin Fitzpatrick, 
+    https://www.pythonguis.com/tutorials/multithreading-pyside6-applications-qthreadpool/"""
 
 
-    def __init__(self,fn, *args, **kwargs):
+
+    def __init__(self,event,fn, *args, **kwargs):
         super().__init__()
         self.fn = fn
         self.args = args
         self.kwargs = kwargs
-        self.signals = WorkerSignals()  # Signals for result, error, and finished
-
+        self.signals = Events.EventList[event]  # Signals for result, error, and finished
     
     @Slot()
     def run(self):
@@ -43,12 +45,4 @@ class Worker(QRunnable):
         finally:
             # Always call the final callback function (clean-up or any final steps)
             self.signals.finished.emit()
-        
-    def setup(self, error_func=None, result_func=None, finished_func=None):
-        if error_func is not None:
-            self.signals.error.connect(error_func)
-        if result_func is not None:
-            self.signals.result.connect(result_func)
-        if finished_func is not None:
-            self.signals.finished.connect(finished_func)
 

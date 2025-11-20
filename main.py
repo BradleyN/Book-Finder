@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         #Create a widget that contains the tabbing system.
-        self.tabs = Tab_Widget()
+        self.tabs = Tab_Widget(parent=self)
         #Get the stylesheets and put them into self.dark_stylesheet and self.light_stylesheet
         self.getStyleSheets()
 

@@ -1,15 +1,13 @@
 from PySide6.QtWidgets import QTabWidget
 
 from UI.Pages.search_page import SearchPage
-#from UI.Pages.suggested_reading import Popular_Items
 
 class Tab_Widget(QTabWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,parent):
+        super().__init__(parent=parent)
         #A dictionary containing the name of each tab, and the corresponding constructor for each tab.
         self.widgets_list = {
-            "Search": SearchPage(), 
-            #"Popular": Popular_Items()
+            "Search": SearchPage(parent=self), 
         }
 
         for name,widget in self.widgets_list.items():

@@ -1,5 +1,4 @@
 import sqlite3
-import asyncio
 
 class BooksTable:
     def __init__(self):
@@ -28,6 +27,4 @@ class BooksTable:
             except Exception as e:
                 print(f"Failed to read column name, {e}")
                 return None
-            
-Books = BooksTable()
         

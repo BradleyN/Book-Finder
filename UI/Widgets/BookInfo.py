@@ -1,9 +1,9 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QTableWidget, QHeaderView, QTableWidgetItem, QAbstractItemView, QVBoxLayout, QWidget, QLabel, QSizePolicy,QSpacerItem, QDialog, QFrame
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QSizePolicy,QSpacerItem, QFrame
 
 class BookInfo(QWidget):
-    def __init__(self):
-        super().__init__()   
+    def __init__(self,parent):
+        super().__init__(parent=parent)   
         self.name = ""
         self.author = ""
         self.name_label = QLabel(f"Name: {self.name}")

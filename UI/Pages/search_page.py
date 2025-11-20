@@ -1,41 +1,27 @@
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, Slot, QThreadPool
+from PySide6.QtCore import Qt, Slot
 
 from PySide6.QtWidgets import (
-    QFormLayout, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableView
+    QFormLayout, QVBoxLayout, QWidget, QLabel, QHBoxLayout
 )
 
-from UI.Widgets.book_table import Book_Table
 from UI.Widgets.input import LineInput, Button
 from UI.Widgets.BookInfo import BookInfo
 from UI.Widgets.TableModel import DictionaryTableModel
-from Backend.BooksTable import Books
-from Backend.Worker import Worker
+from UI.Widgets.TableView import TableView
+from Backend.Signal import event_list
+from Backend.async_worker import run_func_async
+from Backend.Buisness_Logic import get_cols_data
 
 #This class is responsible for creating the UI for the search tab of the application
 class SearchPage(QWidget):
-    def __init__(self): 
-        super().__init__()
-        
-        self.count = 0
-        
-        #Bus.requestData.emit("fetch_all", 0, "SearchPage")
-        #self.books = Books
-        #self.book_list = self.books
-
-        #get labels from data
-        """labels = []
-        for label, _ in self.book_list[0].items():
-            labels.append(label)
-        labels.append("Options")
-        self.table = Book_Table(labels)"""
+    def __init__(self,parent): 
+        super().__init__(parent=parent)
 
         #Technical debt. Fix later maybe?
-        self.book_info = BookInfo()
-        self.labels = ["Title", "Authors","Options"]
-        #self.table = Book_Table(labels,self.book_info)
-        self.table = QTableView(self)
+        self.book_info = BookInfo(parent=self)
+        self.table = TableView(self)
 
         self.bottom = QHBoxLayout()
         self.bottom.addWidget(self.table)
@@ -50,22 +36,14 @@ class SearchPage(QWidget):
         self.filter_button.clicked.connect(self.filter_books)
 
         self.show()
-        self.get_data()
-
-    def get_data(self):
-        worker = Worker(Books.fetch_first_cols)
-        worker.setup(result_func=self.recieve_data)
-        threadpool = QThreadPool().globalInstance()
-        threadpool.start(worker)
+        event_list.create_event("Get_search_data")
+        event_list.subscribe("Get_search_data",result_funcs=[self.recieve_data])
+        run_func_async("Get_search_data",get_cols_data)
 
     @Slot(object)
     def recieve_data(self, data):
-        #print(data)
         self.table_model = DictionaryTableModel(data)
         self.table.setModel(self.table_model)
-
-
-
 
     def createSearchBar(self):
         self.search_input = LineInput()
@@ -112,6 +90,7 @@ class SearchPage(QWidget):
         self.table_model.update_row(0,{"Title": "Hello", "Author": "Guy"})
 
         print(f"Filtering by Genre: {genre_filter}, year: {year_filter}")
+
 
         #TODO:
         #if genre_filter and year_filter = None, grab regular books
