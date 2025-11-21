@@ -1,10 +1,10 @@
 from PySide6.QtCore import Qt, QAbstractTableModel
 
 class DictionaryTableModel(QAbstractTableModel):
-    def __init__(self, data, parent=None):
+    def __init__(self, data, col_labels, parent=None):
         super().__init__(parent)
         self._data = data  # List of dictionaries
-        self._headers = ['Title', 'Authors']
+        self._headers = col_labels
 
     def rowCount(self, parent=None):
         return len(self._data)

@@ -21,3 +21,5 @@ class TableView(QTableView):
         vertical_header.hide()
         vertical_header.setSectionResizeMode(QHeaderView.ResizeToContents)
         vertical_header.setSectionsMovable(False)
+
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
