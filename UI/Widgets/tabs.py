@@ -1,3 +1,5 @@
+from PySide6.QtCore import Slot
+from time import sleep
 from PySide6.QtWidgets import QTabWidget
 
 from UI.Pages.search_page import SearchPage
@@ -10,5 +12,6 @@ class Tab_Widget(QTabWidget):
             "Search": SearchPage(parent=self), 
         }
 
+        #add each item from the dictionary to the tab widget
         for name,widget in self.widgets_list.items():
             self.addTab(widget,name)

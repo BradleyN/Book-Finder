@@ -13,8 +13,13 @@ from time import sleep
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        #Get a reference to the application itself.
+        self.app = QApplication.instance()
+
         #Create a widget that contains the tabbing system.
         self.tabs = Tab_Widget(parent=self)
+
         #Get the stylesheets and put them into self.dark_stylesheet and self.light_stylesheet
         self.getStyleSheets()
 
@@ -37,11 +42,12 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tabs)
 
     def setCurrentMode(self,dark_mode):
+        #TODO: Refactor maybe?
         if dark_mode:
-            self.setStyleSheet(self.dark_stylesheet)
+            self.app.setStyleSheet(self.dark_stylesheet)
             self.dark_mode = True
         else:
-            self.setStyleSheet(self.light_stylesheet)
+            self.app.setStyleSheet(self.light_stylesheet)
             self.dark_mode = False
     
     def getStyleSheets(self):
