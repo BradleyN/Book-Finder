@@ -124,4 +124,37 @@ class BooksTable:
             except Exception as e:
                 print(f"Failed to read column name, {e}")
                 return None
-        
+
+    def add_review(self, book_id, review_score, review_text):
+        with self.conn:
+            cursor = self.conn.cursor()
+            query = "INSERT INTO REVIEWS(book_id, score, text) VALUES (?, ?, ?);"
+            parameters = [book_id, review_score, review_text]
+            cursor.execute(query, parameters)
+
+    def edit_review(self, book_id, review_score, review_text):
+        with self.conn:
+            cursor = self.conn.cursor()
+            query = "UPDATE REVIEWS SET score = ?, text = ? WHERE book_id = ?;"
+            parameters = [review_score, review_text, book_id]
+            cursor.execute(query, parameters)
+
+    def fetch_review_info(self, id_filter=None, limit=None):
+        parameters = []
+
+        with self.conn:
+            cursor = self.conn.cursor()
+            
+            query = "SELECT * FROM REVIEWS WHERE 1=1 "
+
+            if id_filter is not None:
+                query += "AND book_id = ? "
+                parameters.append(id_filter)
+                
+            if limit is not None:
+                query += "LIMIT " + str(limit)
+
+            print(query,parameters)
+            cursor.execute(query,parameters)
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
