@@ -10,11 +10,10 @@ def fetch_book_info(book):
     book_id = book["book_id"]
     #get the info associated with that book. fetch_book_info returns a list so grab the first item in that list
     extra_info = BooksTable().fetch_book_info(id_filter=book_id)[0]
-    #Add data from extra_info to book
+    #Add data from extra_info to book. Basically we're just combining the dictionaries here
     extra_info.update(book)
     return extra_info
 
-#TODO: Fix database structure so that genres can be filtered properly
 def apply_filters(genre_filter, year_input):
     if genre_filter == "":
         genre_filter = None

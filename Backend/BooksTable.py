@@ -38,8 +38,8 @@ class BooksTable:
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
     
+    #Fetch rows from BOOK_INFO table based on the given filters.
     def fetch_book_info(self,id_filter=None,year_filter=None,genre_filter=None,limit=None):
-        #Fetch all rows from the a table and return them as a list of dictionaries.
         parameters = []
 
         with self.conn:
@@ -67,13 +67,18 @@ class BooksTable:
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
     
+    
+    def modify_review(self,book_id,review_score,review_text):
+        #STEP 1: IMPLEMENT BOOK REVIEW
+        pass
+
     def fetch_books_with_year(self,year_filter=None,limit = None):
          parameters = []
 
          with self.conn:
             cursor = self.conn.cursor()
             
-            """query = "SELECT id FROM YEARS "
+            query = "SELECT id FROM YEARS "
 
             if year_filter is not None:
                 query +=  "WHERE \"year\" = ? "
@@ -82,9 +87,8 @@ class BooksTable:
             if limit is not None:
                 query += "LIMIT " + str(limit)
 
-            print(query)"""
+            print(query)
 
-            query = "SELECT * FROM YEARS"
             cursor.execute(query,parameters)
             rows = cursor.fetchall()
             return [dict(row) for row in rows]

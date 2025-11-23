@@ -12,10 +12,6 @@ class Tab_Widget(QTabWidget):
             "Search": SearchPage(parent=self), 
         }
 
+        #add each item from the dictionary to the tab widget
         for name,widget in self.widgets_list.items():
             self.addTab(widget,name)
-
-    @Slot(object)
-    def hello(self,data):
-        print("hello")
-        print(data[0])

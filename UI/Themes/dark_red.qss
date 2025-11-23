@@ -1131,7 +1131,6 @@ QListView::item:selected {
 QTableView::item:selected:focus,
 QTreeView::item:selected:focus,
 QListView::item:selected:focus {
-  background-color: #ff1744;
   selection-background-color: #ff1744;
   color: #ffffff;
   selection-color: #ffffff; /* For Windows */

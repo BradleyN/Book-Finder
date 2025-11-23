@@ -14,9 +14,7 @@ from Backend.Signal import event_list
 from Backend.async_worker import run_func_async
 from Backend.Buisness_Logic import get_books_unfiltered, fetch_book_info, apply_filters
 
-#Events
-CREATE_BOOKS_TABLE = "Get_search_data"
-UPDATE_BOOK_INFO = "update_book_info"
+from Backend.Constants import CREATE_BOOKS_TABLE, UPDATE_BOOK_INFO
 
 #This class is responsible for creating the UI for the search tab of the application
 class SearchPage(QWidget):
@@ -51,7 +49,6 @@ class SearchPage(QWidget):
 
         #when an item on the table is clicked, run self.on_row_clicked
         self.table.clicked.connect(self.on_row_clicked)
-
         self.show()
 
         #Create UPDATE_BOOKS_TABLE event
@@ -77,7 +74,7 @@ class SearchPage(QWidget):
     def on_row_clicked(self,index):
         row = index.row()
         book_selected = self.table_model._data[row]
-        run_func_async("update_book_info", fetch_book_info, book_selected)
+        run_func_async(UPDATE_BOOK_INFO, fetch_book_info, book_selected)
 
     #Function is expecting an object to be returned from the function given to run_func_async()
     @Slot(object)
@@ -115,9 +112,5 @@ class SearchPage(QWidget):
         pass
 
     def filter_books(self):
-        #get genre from text box
-        genre_filter = self.genre_input.text()
-        year_filter = self.year_input.text()
-        run_func_async(CREATE_BOOKS_TABLE, apply_filters, genre_filter=genre_filter, year_input=year_filter)
-
+        pass
         

@@ -9,6 +9,7 @@ class TableView(QTableView):
         #Made the table's scrollpars smooth instead of correcting to the nearest table element
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.setSelectionMode(QTableView.SingleSelection)
 
         #Adjust the horizontal header to stretch the last column to the edge of the canvas
         horizontal_header = self.horizontalHeader()
