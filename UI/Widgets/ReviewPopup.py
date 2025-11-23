@@ -1,12 +1,17 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QDialog, QFrame, QVBoxLayout, QHBoxLayout, QApplication, QFormLayout, QLabel
 from UI.Widgets.input import TextBox, Button, LineInput
+from Backend.Signal import event_list
+from Backend.Constants import ADD_REVIEW, EDIT_REVIEW, GET_REVIEW
+from Backend.async_worker import run_func_async
+from Backend.Buisness_Logic import Add_Review, Edit_Review, Fetch_Review
 
 class ReviewPopup(QDialog):
-    def __init__(self, main_window, book_id):
+    def __init__(self, main_window, book_id, mode):
         super().__init__()
         self.main_window = main_window
         self.setWindowTitle("Review Editor")
+        self.mode = mode #Mode is either "Add" or "Edit"
 
         #Make sure book_id is the right format, then assign it
         try:
@@ -59,8 +64,43 @@ class ReviewPopup(QDialog):
         self.setLayout(self.vertical_layout)
 
         # Connect signals to slots
+        self.create_review_button.clicked.connect(self.on_Review_Button_Clicked)
         self.cancel_button.clicked.connect(self.close)
         self.score_input.textChanged.connect(self.clamp_values)
+
+        if (self.mode is "Add"):
+            #Creates an event for adding a review
+            event_list.create_event(ADD_REVIEW)
+            event_list.subscribe(ADD_REVIEW, result_funcs=[self.Post_Review])
+        else:
+            #Creates an event to get past review data
+            event_list.create_event(GET_REVIEW)
+            event_list.subscribe(GET_REVIEW, result_funcs=[self.Display_Review])
+            run_func_async(GET_REVIEW, Fetch_Review, self.book_id)
+            #Creates an event for editing a review
+            event_list.create_event(EDIT_REVIEW)
+            event_list.subscribe(EDIT_REVIEW, result_funcs=[self.Post_Review])
+
+    #Called to display the review in main window after it is added or edited
+    @Slot(object)
+    def Post_Review(self, data):
+        self.main_window.set_book_info(data)
+        print(data)
+        self.close()
+        
+    def on_Review_Button_Clicked(self):
+        review_score = self.score_input.text()
+        review_text = self.review_text_input.toPlainText()
+        if (self.mode is "Add"):
+            run_func_async(ADD_REVIEW, Add_Review, self.book_id, review_score, review_text)
+        else:
+            run_func_async(EDIT_REVIEW, Edit_Review, self.book_id, review_score, review_text)
+
+    def Display_Review(self, data):
+        score = data["score"]
+        text = data["text"]
+        self.score_input.setText(str(score))
+        self.review_text_input.setText(text)
 
     def closeEvent(self, event):
         self.main_window.popup = None

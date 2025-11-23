@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QLabel, QSizePolicy,QSpacerItem, QFrame, QScrollArea
 from UI.Widgets.input import Button
 from UI.Widgets.ReviewPopup import ReviewPopup
+from UI.Widgets.MessagePopup import MessagePopup
 
 class BookInfo(QWidget):
     def __init__(self,parent):
@@ -14,7 +15,9 @@ class BookInfo(QWidget):
             "Publisher" : Book_Label("<h4>Publisher: </h4>"),
             "Price Starting With ($)" : Book_Label("<h4>Price:</h4>"),
             "Publish Date (Month)" : Book_Label("<h4>Publish Month: </h4>"),
-            "Publish Date (Year)" : Book_Label("<h4>Publish Year: </h4>",include_seperator=False)
+            "Publish Date (Year)" : Book_Label("<h4>Publish Year: </h4>"),
+            "score" : Book_Label("<h4>Review Score: </h4>"),
+            "text" : Book_Label("<h4>Review Text: </h4>", include_seperator=False)
         }
 
         self.book_id = None
@@ -31,6 +34,7 @@ class BookInfo(QWidget):
         self.edit_review_button.setDisabled(True)
 
         self.add_review_button.clicked.connect(self.on_add_button_clicked)
+        self.edit_review_button.clicked.connect(self.on_edit_button_clicked)
 
         self.horizontal_buttons = QHBoxLayout()
         self.horizontal_buttons.addWidget(self.add_review_button)
@@ -64,15 +68,35 @@ class BookInfo(QWidget):
 
     def on_add_button_clicked(self):
         if self.popup is None:
-            self.popup = ReviewPopup(main_window=self, book_id=self.book_id)
-            self.popup.resize(800, 600)
-            self.popup.exec()
+            #Checks if there is already a review
+            if (not (self.info["score"].label.text()=="<h4>Review Score: </h4>None") & (self.info["text"].label.text()=="<h4>Review Text: </h4>None")):
+                message = "A review for this book already exists."
+                self.popup = MessagePopup(main_window=self, book_id=self.book_id, message=message)
+                self.popup.resize(200,100)
+                self.popup.exec()
+            else:
+                self.popup = ReviewPopup(main_window=self, book_id=self.book_id, mode="Add")
+                self.popup.resize(800, 600)
+                self.popup.exec()
         else:
             self.popup.raise_()
 
     def on_edit_button_clicked(self):
         if self.book_id is not None:
-            print("getting review info for book_id: " + self.book_id)
+            print("getting review info for book_id: " + str(self.book_id))
+
+        if self.popup is None:
+            if ((self.info["score"].label.text()=="<h4>Review Score: </h4>None") & (self.info["text"].label.text()=="<h4>Review Text: </h4>None")):
+                message = "There is not a review to edit because no reviews for this book exist."
+                self.popup = MessagePopup(main_window=self, book_id=self.book_id, message=message)
+                self.popup.resize(200,100)
+                self.popup.exec()
+            else:
+                self.popup = ReviewPopup(main_window=self, book_id=self.book_id, mode="Edit")
+                self.popup.resize(800, 600)
+                self.popup.exec()
+        else:
+            self.popup.raise_()
             
         
 
@@ -81,6 +105,8 @@ class BookInfo(QWidget):
             #print(key == "Price Starting With ($)")
             if key == "Price Starting With ($)":
                 self.info[key].changeData(value,include_dollar_sign=True)
+            elif key == "score":
+                self.info[key].changeData(value, include_out_of_10 = True)
             elif key == "book_id":
                 self.book_id = value
                 #Enable the add and review buttons only when a book actually exists
@@ -110,7 +136,7 @@ class Book_Label(QWidget):
             seperator.setFrameShadow(QFrame.Sunken) # Gives a 3D effect (optional)
             self.vertical_layout.addWidget(seperator)
 
-    def changeData(self,new_data,include_dollar_sign=False):
+    def changeData(self,new_data,include_dollar_sign=False, include_out_of_10=False):
         text = self.text
 
         if include_dollar_sign:
@@ -121,7 +147,10 @@ class Book_Label(QWidget):
         if new_data == "":
             new_data = "None"
 
-        text += new_data
+        text += str(new_data)
+
+        if (include_out_of_10 & (new_data!="None")):
+            text += " / 10"
 
         #print(text)
         self.label.setText(text)
