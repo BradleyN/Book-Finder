@@ -68,18 +68,20 @@ class ReviewPopup(QDialog):
         self.cancel_button.clicked.connect(self.close)
         self.score_input.textChanged.connect(self.clamp_values)
 
-        if (self.mode is "Add"):
-            #Creates an event for adding a review
-            event_list.create_event(ADD_REVIEW)
-            event_list.subscribe(ADD_REVIEW, result_funcs=[self.Post_Review])
-        else:
-            #Creates an event to get past review data
-            event_list.create_event(GET_REVIEW)
-            event_list.subscribe(GET_REVIEW, result_funcs=[self.Display_Review])
+        #Creates an event for adding a review
+        event_list.create_event(ADD_REVIEW)
+        event_list.subscribe(ADD_REVIEW, result_funcs=[self.Post_Review])
+        
+        #Creates an event to get past review data
+        event_list.create_event(GET_REVIEW)
+        event_list.subscribe(GET_REVIEW, result_funcs=[self.Display_Review])
+
+        #Creates an event for editing a review
+        event_list.create_event(EDIT_REVIEW)
+        event_list.subscribe(EDIT_REVIEW, result_funcs=[self.Post_Review])
+
+        if self.mode == "Edit":
             run_func_async(GET_REVIEW, Fetch_Review, self.book_id)
-            #Creates an event for editing a review
-            event_list.create_event(EDIT_REVIEW)
-            event_list.subscribe(EDIT_REVIEW, result_funcs=[self.Post_Review])
 
     #Called to display the review in main window after it is added or edited
     @Slot(object)
@@ -91,7 +93,7 @@ class ReviewPopup(QDialog):
     def on_Review_Button_Clicked(self):
         review_score = self.score_input.text()
         review_text = self.review_text_input.toPlainText()
-        if (self.mode is "Add"):
+        if (self.mode == "Add"):
             run_func_async(ADD_REVIEW, Add_Review, self.book_id, review_score, review_text)
         else:
             run_func_async(EDIT_REVIEW, Edit_Review, self.book_id, review_score, review_text)

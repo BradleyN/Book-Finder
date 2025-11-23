@@ -7,7 +7,7 @@ from UI.Widgets.MessagePopup import MessagePopup
 class BookInfo(QWidget):
     def __init__(self,parent):
         super().__init__(parent=parent)  
-        self.info = {
+        self.label_info = {
             "Title" : Book_Label("<h4>Title:</h4> "),
             "Authors" : Book_Label("<h4>Authors:</h4> "),
             "Description" : Book_Label("<h4>Description:</h4>"),
@@ -20,8 +20,11 @@ class BookInfo(QWidget):
             "text" : Book_Label("<h4>Review Text: </h4>", include_seperator=False)
         }
 
+        self.info = {}
+
         self.book_id = None
         self.popup = None
+        self.has_score = None
 
         #TODO: FIND A BETTER WAY TO NOT HAVE THE ITEMS MOVE DOWN WHEN STRETCHING THE WINDOW
         self.spacer = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -42,7 +45,7 @@ class BookInfo(QWidget):
 
         self.vertical_layout = QVBoxLayout()
 
-        for _,label in self.info.items():
+        for _,label in self.label_info.items():
             self.vertical_layout.addLayout(label.vertical_layout) 
 
         self.vertical_layout.addLayout(self.horizontal_buttons)
@@ -69,7 +72,9 @@ class BookInfo(QWidget):
     def on_add_button_clicked(self):
         if self.popup is None:
             #Checks if there is already a review
-            if (not (self.info["score"].label.text()=="<h4>Review Score: </h4>None") & (self.info["text"].label.text()=="<h4>Review Text: </h4>None")):
+            score_check = "score" in self.info and self.info["score"] is not None
+            text_check = "text" in self.info and self.info["text"] is not None
+            if (score_check or text_check):
                 message = "A review for this book already exists."
                 self.popup = MessagePopup(main_window=self, book_id=self.book_id, message=message)
                 self.popup.resize(200,100)
@@ -85,8 +90,11 @@ class BookInfo(QWidget):
         if self.book_id is not None:
             print("getting review info for book_id: " + str(self.book_id))
 
+        #TODO: REFACTOR THIS TO NOT USE THE TEXT FROM self.info.
         if self.popup is None:
-            if ((self.info["score"].label.text()=="<h4>Review Score: </h4>None") & (self.info["text"].label.text()=="<h4>Review Text: </h4>None")):
+            score_check = "score" in self.info and self.info["score"] is not None
+            text_check = "text" in self.info and self.info["text"] is not None
+            if (not score_check and not text_check):
                 message = "There is not a review to edit because no reviews for this book exist."
                 self.popup = MessagePopup(main_window=self, book_id=self.book_id, message=message)
                 self.popup.resize(200,100)
@@ -99,21 +107,25 @@ class BookInfo(QWidget):
             self.popup.raise_()
             
         
-
+    #TODO: REFACTOR THIS TO MAKE IT MORE READABLE
     def set_book_info(self,book_data):
         for key, value in book_data.items():
             #print(key == "Price Starting With ($)")
             if key == "Price Starting With ($)":
-                self.info[key].changeData(value,include_dollar_sign=True)
+                self.label_info[key].changeData(value,include_dollar_sign=True)
             elif key == "score":
-                self.info[key].changeData(value, include_out_of_10 = True)
+                self.label_info[key].changeData(value, include_out_of_10 = True)
             elif key == "book_id":
                 self.book_id = value
                 #Enable the add and review buttons only when a book actually exists
                 self.add_review_button.setDisabled(False)
                 self.edit_review_button.setDisabled(False)
             else:
-                self.info[key].changeData(value)
+                self.label_info[key].changeData(value)
+
+            if value == "":
+                value = None
+            self.info[key] = value
 
 class Book_Label(QWidget):
     def __init__(self, text, data=None, include_seperator=True):
