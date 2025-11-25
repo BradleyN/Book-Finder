@@ -12,7 +12,7 @@ from UI.Widgets.TableModel import DictionaryTableModel
 from UI.Widgets.TableView import TableView
 from Backend.Signal import event_list
 from Backend.async_worker import run_func_async
-from Backend.Buisness_Logic import get_books_unfiltered, fetch_book_info, apply_filters
+from Backend.Buisness_Logic import get_books_unfiltered, fetch_book_info, apply_filters, Search_Books
 
 from Backend.Constants import CREATE_BOOKS_TABLE, UPDATE_BOOK_INFO
 
@@ -107,10 +107,17 @@ class SearchPage(QWidget):
     def search_books(self):
         text = self.search_input.text()
         print(f"Searching for: {text}")
-        #TODO: When db stuff is done, fill in the code here.
-        #db_api.search_books(text)
-        pass
+        run_func_async(CREATE_BOOKS_TABLE, Search_Books, text)
 
     def filter_books(self):
-        pass
+        genre_text = self.genre_input.text()
+        if genre_text == '':
+            genre_text = None
+
+        year_text = self.year_input.text()
+        if year_text == '':
+            year_text = None
+
+        run_func_async(CREATE_BOOKS_TABLE, apply_filters, genre_text, year_text)
+
         
