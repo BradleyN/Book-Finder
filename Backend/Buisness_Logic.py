@@ -22,34 +22,6 @@ def fetch_book_info(book):
     extra_info.update(review_info)
     return extra_info
 
-def apply_filters(genre_filter, year_input):
-    if genre_filter == "":
-        genre_filter = None
-    else:
-        #TODO: Find a better solution for this
-        genre_filter = genre_filter.capitalize()
-
-    try:
-        #Try casting to an int to see if it is a valid integer.
-        year_filter = str(int(year_input))
-    except ValueError:
-        print("That is not a valid year")
-        year_filter = None
-
-    print(f"Filtering by Genre: {genre_filter}, year: {year_filter}")
-
-    #REFACTOR?
-    if genre_filter is None and year_filter is None:
-        books = get_books_unfiltered()
-    else:
-        books_with_year = BooksTable().fetch_books_with_year(year_filter,limit=20)
-        print(books_with_year)
-        books = []
-        for book_info in books_with_year:
-            book = BooksTable().fetch_books(id_filter=book_info["id"])[0]
-            books.append(book)
-    return books
-
 def Add_Review(book_id, review_score, review_text):
     if(not isinstance(book_id, int)):
         print("Book id needs to be a whole number")
@@ -79,3 +51,30 @@ def Edit_Review(book_id, review_score, review_text):
         print("Review score needs to be a number")
     BooksTable().edit_review(book_id, review_score, review_text)
     return {"book_id": book_id, "score": review_score, "text": review_text}
+
+def Search_Books(text):
+    return(BooksTable().fetch_books(name_filter = text))
+
+def apply_filters(genre, year):
+ 
+    return_list = []
+
+    if genre is None and year is None:
+        #grab data unfiltered
+        return get_books_unfiltered()
+    
+    if genre is None:
+        year_data = BooksTable().fetch_books_with_year(year_filter = year)
+        year_and_genre = year_data
+
+    elif year is None:
+        genre_data = BooksTable().fetch_book_category(category=genre)
+        year_and_genre = genre_data
+
+    else:
+        year_and_genre = list(set(genre_data).intersection(set(year_data)))
+
+    for book in year_and_genre[:100]:
+        return_list.append(BooksTable().fetch_books(id_filter=book)[0])
+    
+    return return_list

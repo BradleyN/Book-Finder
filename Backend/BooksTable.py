@@ -1,7 +1,7 @@
 import sqlite3
 
 #A list of valid tables to read from
-TABLE_NAMES = {"BOOKS", "BOOK_INFO", "READING_GOALS", "WISHLIST", "YEARS"}
+TABLE_NAMES = {"BOOKS", "BOOK_INFO", "READING_GOALS", "WISHLIST", "YEARS", "BOOK_CATEGORIES"}
 
 class BooksTable:
     def __init__(self):
@@ -27,8 +27,8 @@ class BooksTable:
                 parameters.append(id_filter)
             
             if name_filter is not None:
-                query += "AND \"Title\" = ? "    
-                parameters.append(name_filter)            
+                query += "AND \"Title\" LIKE ? "    
+                parameters.append("%" + name_filter + "%")            
 
             if limit is not None:
                 query += "LIMIT " + str(limit)
@@ -66,8 +66,28 @@ class BooksTable:
             cursor.execute(query,parameters)
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
-    
-    
+
+    def fetch_book_category(self, category=None, limit=None):
+        parameters = []
+        
+        with self.conn:
+            cursor = self.conn.cursor()
+
+            query = "SELECT book_id FROM BOOK_CATEGORIES "
+
+            if category is not None:
+                query += "WHERE category = ? "
+                parameters.append(category)
+                
+            if limit is not None:
+                query += "LIMIT " + str(limit)
+
+            print(query, parameters)
+            cursor.execute(query,parameters)
+            rows = cursor.fetchall()
+            print(rows)
+            return [dict(row)["book_id"] for row in rows]
+
     def modify_review(self,book_id,review_score,review_text):
         #STEP 1: IMPLEMENT BOOK REVIEW
         pass
@@ -78,7 +98,7 @@ class BooksTable:
          with self.conn:
             cursor = self.conn.cursor()
             
-            query = "SELECT id FROM YEARS "
+            query = "SELECT book_id FROM YEARS "
 
             if year_filter is not None:
                 query +=  "WHERE \"year\" = ? "
@@ -91,7 +111,7 @@ class BooksTable:
 
             cursor.execute(query,parameters)
             rows = cursor.fetchall()
-            return [dict(row) for row in rows]
+            return [dict(row)["book_id"] for row in rows]
 
 
     #Pass col_names as a tuple
