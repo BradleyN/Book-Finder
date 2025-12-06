@@ -1,4 +1,5 @@
 import sqlite3
+from Backend.Logger import main_logger
 
 #A list of valid tables to read from
 TABLE_NAMES = {"BOOKS", "BOOK_INFO", "READING_GOALS", "WISHLIST", "YEARS", "BOOK_CATEGORIES"}
@@ -13,8 +14,6 @@ class BooksTable:
     def fetch_books(self,id_filter=None,name_filter=None,limit=None):
         #Fetch all rows from the a table and return them as a list of dictionaries.
         parameters = []
-
-        print(id_filter)
 
         with self.conn:
             cursor = self.conn.cursor()
@@ -33,9 +32,10 @@ class BooksTable:
             if limit is not None:
                 query += "LIMIT " + str(limit)
 
-            print(query)
+            main_logger.Log(f"{query},{parameters}")
             cursor.execute(query,parameters)
             rows = cursor.fetchall()
+
             return [dict(row) for row in rows]
     
     #Fetch rows from BOOK_INFO table based on the given filters.
@@ -62,7 +62,8 @@ class BooksTable:
             if limit is not None:
                 query += "LIMIT " + str(limit)
 
-            print(query,parameters)
+            main_logger.Log(f"{query},{parameters}")
+
             cursor.execute(query,parameters)
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
@@ -82,15 +83,11 @@ class BooksTable:
             if limit is not None:
                 query += "LIMIT " + str(limit)
 
-            print(query, parameters)
+            main_logger.Log(f"{query},{parameters}")
             cursor.execute(query,parameters)
             rows = cursor.fetchall()
             print(rows)
             return [dict(row)["book_id"] for row in rows]
-
-    def modify_review(self,book_id,review_score,review_text):
-        #STEP 1: IMPLEMENT BOOK REVIEW
-        pass
 
     def fetch_books_with_year(self,year_filter=None,limit = None):
          parameters = []
@@ -107,49 +104,18 @@ class BooksTable:
             if limit is not None:
                 query += "LIMIT " + str(limit)
 
-            print(query)
+            main_logger.Log(f"{query},{parameters}")
 
             cursor.execute(query,parameters)
             rows = cursor.fetchall()
             return [dict(row)["book_id"] for row in rows]
-
-
-    #Pass col_names as a tuple
-    #TODO: REFACTOR!!!
-    def fetch_cols(self,cols_list,table,limit=None):
-        with self.conn:
-            cursor = self.conn.cursor()
-            query = "SELECT "
-
-            #add cols to table query
-            for i in range(len(cols_list)):
-                if i != len(cols_list)-1:
-                    query += cols_list[i] + ", "
-                else:
-                    query += cols_list[i] + " "
-
-            #specify table to get data from
-            query += "FROM " + table + " "
-
-            #apply limit if provided
-            if limit is not None:
-                query += "LIMIT " + str(limit)
-
-            print(query)
-            try:
-            
-                cursor.execute("SELECT Title, Authors FROM BOOKS LIMIT 100")
-                rows = cursor.fetchall()
-                return [dict(row) for row in rows]
-            except Exception as e:
-                print(f"Failed to read column name, {e}")
-                return None
 
     def add_review(self, book_id, review_score, review_text):
         with self.conn:
             cursor = self.conn.cursor()
             query = "INSERT INTO REVIEWS(book_id, score, text) VALUES (?, ?, ?);"
             parameters = [book_id, review_score, review_text]
+            main_logger.Log(f"{query},{parameters}")
             cursor.execute(query, parameters)
 
     def edit_review(self, book_id, review_score, review_text):
@@ -157,6 +123,7 @@ class BooksTable:
             cursor = self.conn.cursor()
             query = "UPDATE REVIEWS SET score = ?, text = ? WHERE book_id = ?;"
             parameters = [review_score, review_text, book_id]
+            main_logger.Log(f"{query},{parameters}")
             cursor.execute(query, parameters)
 
     def fetch_review_info(self, id_filter=None, limit=None):
@@ -174,7 +141,7 @@ class BooksTable:
             if limit is not None:
                 query += "LIMIT " + str(limit)
 
-            print(query,parameters)
+            main_logger.Log(f"{query},{parameters}")
             cursor.execute(query,parameters)
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
