@@ -118,6 +118,8 @@ class SearchPage(QWidget):
         if year_text == '':
             year_text = None
 
+        book_selected = None
         run_func_async(CREATE_BOOKS_TABLE, apply_filters, genre_text, year_text)
+        
 
         

@@ -67,14 +67,18 @@ def apply_filters(genre, year):
         year_data = BooksTable().fetch_books_with_year(year_filter = year)
         year_and_genre = year_data
 
-    elif year is None:
+    if year is None:
         genre_data = BooksTable().fetch_book_category(category=genre)
         year_and_genre = genre_data
 
     else:
+        year_data = BooksTable().fetch_books_with_year(year_filter = year)
+        genre_data = BooksTable().fetch_book_category(category = genre)
         year_and_genre = list(set(genre_data).intersection(set(year_data)))
 
     for book in year_and_genre[:100]:
         return_list.append(BooksTable().fetch_books(id_filter=book)[0])
+
+
     
     return return_list
