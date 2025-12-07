@@ -127,6 +127,13 @@ class BookInfo(QWidget):
                 value = None
             self.info[key] = value
 
+    def reset_book_info(self):
+        for key, value in self.label_info.items():
+            value.changeData("")
+            self.info[key] = None
+        self.add_review_button.setDisabled(True)
+        self.edit_review_button.setDisabled(True)
+
 class Book_Label(QWidget):
     def __init__(self, text, data=None, include_seperator=True):
         super().__init__()

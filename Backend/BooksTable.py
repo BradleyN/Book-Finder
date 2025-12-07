@@ -84,21 +84,24 @@ class BooksTable:
         return [dict(row) for row in cursor.fetchall()]
 
     #Function to fetch categories from the BOOK_CATEGORIES table
-    def fetch_book_category(self, category=None, limit=None):
+    def fetch_book_category(self, id_filter=None, column="book_id", category=None, limit=None):
         filters = {}
 
         if category is not None:
             filters["category"] = category
 
+        if id_filter is not None:
+            filters["book_id"] = id_filter
+
         query, params = self.select_query(
             table="BOOK_CATEGORIES",
             filters=filters,
-            columns="book_id",
+            columns=column,
             limit=limit
         )
 
         cursor = self.conn.execute(query, params)
-        return [row["book_id"] for row in cursor.fetchall()]
+        return [row[column] for row in cursor.fetchall()]
 
     def fetch_books_with_year(self, year_filter=None, limit=None):
         filters = {}
@@ -148,4 +151,4 @@ class BooksTable:
 
         cursor = self.conn.execute(query, params)
         return [dict(row) for row in cursor.fetchall()]
-
+            

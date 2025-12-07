@@ -1,4 +1,5 @@
 from Backend.BooksTable import BooksTable
+import random
 
 #Get the book data without using and filtering.
 def get_books_unfiltered():
@@ -53,7 +54,7 @@ def Edit_Review(book_id, review_score, review_text):
     return {"book_id": book_id, "score": review_score, "text": review_text}
 
 def Search_Books(text):
-    return(BooksTable().fetch_books(name_filter = text))
+    return(BooksTable().fetch_books(name_filter = text, limit=100))
 
 def apply_filters(genre, year):
  
@@ -79,6 +80,32 @@ def apply_filters(genre, year):
     for book in year_and_genre[:100]:
         return_list.append(BooksTable().fetch_books(id_filter=book)[0])
 
-
-    
     return return_list
+
+#Simple book reccomendation system.
+#Just takes the highest review score and finds books that share a category
+def recommend_books():
+    book_reviews = BooksTable().fetch_review_info()
+    #sort by score
+    book_reviews.sort(key=lambda x: x["score"], reverse=True)
+    
+    most_liked_id = book_reviews[0]["book_id"]
+
+    most_liked_categories = BooksTable().fetch_book_category(id_filter=most_liked_id, column="category")
+
+    output_ids = []
+    for category in most_liked_categories:
+        output_ids.extend(BooksTable().fetch_book_category(category=category,limit=100))
+
+    #Shuffle the ids to make sure they aren't dominated by one category
+    random.seed(42)
+    random.shuffle(output_ids)
+
+    return_list = []
+    for book in output_ids[:100]:
+        return_list.append(BooksTable().fetch_books(id_filter=book)[0])
+
+    return return_list
+    
+
+
