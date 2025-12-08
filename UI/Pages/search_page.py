@@ -12,7 +12,8 @@ from UI.Widgets.TableModel import DictionaryTableModel
 from UI.Widgets.TableView import TableView
 from Backend.Signal import event_list
 from Backend.async_worker import run_func_async
-from Backend.Buisness_Logic import get_books_unfiltered, fetch_book_info, apply_filters, Search_Books
+from Backend.Buisness_Logic import get_books_unfiltered, fetch_book_info, apply_filters, Search_Books, recommend_books
+from Backend.Logger import main_logger
 
 from Backend.Constants import CREATE_BOOKS_TABLE, UPDATE_BOOK_INFO
 
@@ -45,7 +46,12 @@ class SearchPage(QWidget):
         self.search_input.returnPressed.connect(self.search_books)
 
         #when the filter button is clicked, run self.filter_books
-        self.filter_button.clicked.connect(self.filter_books)
+        self.filter_button.clicked.connect(self.on_filter_books_clicked)
+
+        #when reset button is clicked, run self.reset_books
+        self.reset_button.clicked.connect(self.on_reset_books_clicked)
+
+        self.recommend_books_button.clicked.connect(self.on_recommend_books_clicked)
 
         #when an item on the table is clicked, run self.on_row_clicked
         self.table.clicked.connect(self.on_row_clicked)
@@ -65,6 +71,7 @@ class SearchPage(QWidget):
     #Function is expecting an object to be returned from the function given to run_func_async()
     @Slot(object)
     def update_table(self, data):
+        self.book_info.reset_book_info()
         #Give DictionaryTableModel the columns "Title" and "Authors", which will exclude the book_id variable from being shown.
         self.table_model = DictionaryTableModel(data,col_labels=['Title', 'Authors'])
         #Set the TableView to use the new data model 
@@ -94,22 +101,33 @@ class SearchPage(QWidget):
         self.filter_form = QFormLayout()
         self.filter_form.addRow("Genre: ", self.genre_input)
         self.filter_form.addRow("Year: ", self.year_input)
+
+
         self.filter_button = Button("Filter")
+        self.recommend_books_button = Button("Recommend Books")
+        self.reset_button = Button("Reset")
+
+        self.button_row = QHBoxLayout()
+        self.button_row.addWidget(self.filter_button)
+        self.button_row.addWidget(self.recommend_books_button)
+        self.button_row.addWidget(self.reset_button)
 
     def buildLayout(self):
         self.page_layout = QVBoxLayout()
         self.page_layout.addWidget(self.options_label)
         self.page_layout.addLayout(self.filter_form)
-        self.page_layout.addWidget(self.filter_button)
+        self.page_layout.addLayout(self.button_row)
         self.page_layout.addLayout(self.search_form)
         self.page_layout.addLayout(self.bottom)
 
     def search_books(self):
         text = self.search_input.text()
-        print(f"Searching for: {text}")
-        run_func_async(CREATE_BOOKS_TABLE, Search_Books, text)
+        #don't search if there is nothing in the search bar.
+        if text != "":
+            main_logger.Log(f"Searching for: \"{text}\"")
+            run_func_async(CREATE_BOOKS_TABLE, Search_Books, text)
 
-    def filter_books(self):
+    def on_filter_books_clicked(self):
         genre_text = self.genre_input.text()
         if genre_text == '':
             genre_text = None
@@ -118,6 +136,16 @@ class SearchPage(QWidget):
         if year_text == '':
             year_text = None
 
-        run_func_async(CREATE_BOOKS_TABLE, apply_filters, genre_text, year_text)
+        #don't filter if there's nothing inputted
+        if year_text is not None or genre_text is not None:
+            run_func_async(CREATE_BOOKS_TABLE, apply_filters, genre_text, year_text)
+
+    def on_reset_books_clicked(self):
+        run_func_async(CREATE_BOOKS_TABLE,get_books_unfiltered)
+
+    def on_recommend_books_clicked(self):
+        run_func_async(CREATE_BOOKS_TABLE, recommend_books)
+    
+        
 
         
