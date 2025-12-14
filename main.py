@@ -1,14 +1,14 @@
 from __future__ import annotations
 import sys
 
+from path_fix import resource_path
+
 from PySide6.QtWidgets import (
     QApplication, QMainWindow
 )
 
 from UI.Widgets.tabs import Tab_Widget
 
-
-from time import sleep
 # This class is responsible for handling the window itself, including the title bar, keyboard shortcuts, and theme.
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -42,7 +42,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tabs)
 
     def setCurrentMode(self,dark_mode):
-        #TODO: Refactor maybe?
         if dark_mode:
             self.app.setStyleSheet(self.dark_stylesheet)
             self.dark_mode = True
@@ -51,18 +50,17 @@ class MainWindow(QMainWindow):
             self.dark_mode = False
     
     def getStyleSheets(self):
-        with open("UI/Themes/light_red.qss") as f:
+        with open(resource_path("UI/Themes/light_red.qss")) as f:
             self.light_stylesheet = f.read()
 
-        with open("UI/Themes/dark_red.qss") as f:
+        with open(resource_path("UI/Themes/dark_red.qss")) as f:
             self.dark_stylesheet = f.read()    
 
-        with open("UI/Themes/fixes.qss") as f:
+        with open(resource_path("UI/Themes/fixes.qss")) as f:
             fixes_stylesheet = f.read()
 
         self.light_stylesheet += fixes_stylesheet
         self.dark_stylesheet += fixes_stylesheet
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
