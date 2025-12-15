@@ -11,8 +11,9 @@ jobs:
   Setup-Environment:
     runs-on: ubuntu-latest
     permissions:
-      pages: write
-      id-token: write
+      contents: write
+      pull-requests: write
+      repository-projects: write
 
     steps:
       - name: Checkout code
