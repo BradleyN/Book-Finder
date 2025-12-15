@@ -44,6 +44,13 @@ jobs:
           name: linux-exe
           path: dist/BookFinder
 
+  Deploy:
+    needs: Setup-Environment
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
