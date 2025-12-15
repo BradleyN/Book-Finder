@@ -28,7 +28,7 @@ jobs:
           pyinstaller --version
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y libxcb1 libxkbcommon0 libxcb-shape0 libxcb-keysyms1 libxcb-image0 libxcb-xkb1 libxcb-icccm4 libxcb-cursor0 libxcb-util1 libxcb-render-util0 libtiff5
+        run: sudo apt-get update && sudo apt-get install -y libxcb1 libxkbcommon0 libxcb-shape0 libxcb-keysyms1 libxcb-image0 libxcb-xkb1 libxcb-icccm4 libxcb-cursor0 libxcb-util1 libxcb-render-util0
           
       - name: Linux Build
         run: |
