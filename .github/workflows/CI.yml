@@ -26,18 +26,13 @@ jobs:
         run: |
           pip install -r requirements.txt
           pyinstaller --version
-  Linux-Build:
-      needs: Setup-Environment
-      runs-on: ubuntu-latest
-      permissions:
-        pages: write
-        id-token: write
-      steps:
-        - name: Linux Build
-          run: |
-            pyinstaller --onefile --windowed --add-data="UI/Themes/*.qss:UI/Themes" --add-data="Backend/Books_Database/BooksDatabase.db:Backend/Books_Database" --name=BookFinder main.py
-        - name: Upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: linux-exe
-            path: dist/BookFinder
+          
+      - name: Linux Build
+        run: |
+          pyinstaller --onefile --windowed --add-data="UI/Themes/*.qss:UI/Themes" --add-data="Backend/Books_Database/BooksDatabase.db:Backend/Books_Database" --name=BookFinder main.py
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-exe
+          path: dist/BookFinder
