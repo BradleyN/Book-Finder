@@ -9,7 +9,6 @@ class BooksTable:
     def __init__(self):
         # Initialize connection to the database file
         self.db_path = resource_path('Backend/Books_Database/BooksDatabase.db')
-        main_logger.Log(str(self.db_path))
         self.conn = sqlite3.connect(self.db_path,check_same_thread=False)
         self.conn.row_factory = sqlite3.Row  # This allows column access by name
 
