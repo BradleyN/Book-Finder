@@ -49,8 +49,9 @@ jobs:
     needs: Setup-Environment
     runs-on: ubuntu-latest
     permissions:
-      pages: write
-      id-token: write
+      contents: write
+      pull-requests: write
+      repository-projects: write
     steps:
       - name: Create Release
         id: create_release
