@@ -1,4 +1,4 @@
-# Book-Finder v0.9.0
+# Book-Finder v0.9.1
 Team members: Nathan Bradley, Tristan Fox, James Headrick
 
 **Description:**
